@@ -1,0 +1,8 @@
+node_modules
+.next
+.next-stale-build-cache
+*.tsbuildinfo
+.env
+.env.local
+*.log
+.DS_Store

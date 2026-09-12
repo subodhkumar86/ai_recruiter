@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum InterviewStatus {
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum RecruiterStatus {
+  NEW
+  SHORTLISTED
+  HOLD
+  REJECTED
+}
+
+model Candidate {
+  id             String      @id @default(cuid())
+  name           String
+  email          String      @unique
+  mobile         String      @unique
+  targetRole     String?
+  location       String?
+  qualification  String?
+  college        String?
+  branch         String?
+  graduationYear Int?
+  cgpa           Float?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  interviews     Interview[]
+}
+
+model Interview {
+  id              String          @id @default(cuid())
+  candidateId     String
+  candidate       Candidate       @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  status          InterviewStatus @default(IN_PROGRESS)
+  stage           String
+  consentedAt     DateTime?
+  startedAt       DateTime        @default(now())
+  completedAt     DateTime?
+  durationSeconds Int?
+  aiMode          String?
+  recruiterStatus RecruiterStatus @default(NEW)
+  recruiterNotes  String?         @db.Text
+  messages        Message[]
+  evaluation      Evaluation?
+}
+
+model Message {
+  id          String    @id @default(cuid())
+  interviewId String
+  interview   Interview @relation(fields: [interviewId], references: [id], onDelete: Cascade)
+  role        String
+  content     String    @db.Text
+  createdAt   DateTime  @default(now())
+}
+
+model Evaluation {
+  id             String    @id @default(cuid())
+  interviewId    String    @unique
+  interview      Interview @relation(fields: [interviewId], references: [id], onDelete: Cascade)
+  communication  Int
+  confidence     Int
+  technical      Int
+  problemSolving Int
+  project        Int
+  overall        Float
+  summary        String    @db.Text
+  strengths      Json
+  concerns       Json
+  recommendation String
+  createdAt      DateTime  @default(now())
+}
