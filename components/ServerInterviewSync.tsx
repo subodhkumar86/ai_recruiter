@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 
 const key = "itseasynow-interviews-v1";
+type StoredInterview = { id: string; [key: string]: unknown };
 
 export default function ServerInterviewSync() {
   useEffect(() => {
@@ -10,10 +11,11 @@ export default function ServerInterviewSync() {
     let cancelled = false;
     fetch("/api/interviews")
       .then(response => response.ok ? response.json() : [])
-      .then((remote: unknown[]) => {
+      .then((remote: StoredInterview[]) => {
         if (cancelled || !Array.isArray(remote) || remote.length === 0) return;
-        const local = JSON.parse(localStorage.getItem(key) || "[]") as Array<{ id: string }>;
-        const merged = [...remote, ...local.filter(item => !remote.some((server: any) => server.id === item.id))];
+        let local: StoredInterview[] = [];
+        try { local = JSON.parse(localStorage.getItem(key) || "[]") as StoredInterview[]; } catch { local = []; }
+        const merged = [...remote, ...local.filter(item => !remote.some(server => server.id === item.id))];
         const before = localStorage.getItem(key);
         localStorage.setItem(key, JSON.stringify(merged));
         if (before !== JSON.stringify(merged) && !sessionStorage.getItem("interview-server-sync")) {

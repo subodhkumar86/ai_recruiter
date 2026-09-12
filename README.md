@@ -27,7 +27,7 @@ Requirements: Node.js 18.17 or newer.
 
 ```bash
 npm install
-cp .env.example .env.local
+copy .env.example .env
 npm run dev
 ```
 
@@ -76,16 +76,11 @@ See `PROJECT_DOCUMENTATION.md` for detailed product decisions, data flow, API co
 
 This adapter boundary makes it straightforward to replace local persistence with Prisma without changing the interview interface.
 
-## Production database
+## Persistence and database
 
-The included Prisma schema models `Candidate`, `Interview`, `Message`, and `Evaluation`. To enable it in a production extension:
+The app is deliberately usable with no database: completed interviews are saved to browser storage for a zero-setup demo. When `DATABASE_URL` is configured, the same completed interview is also synced through `/api/interviews` to PostgreSQL using Prisma. Recruiter deletions remove the local record immediately and request server-side deletion as well.
 
-1. Install `prisma` and `@prisma/client`.
-2. Set `DATABASE_URL` to a PostgreSQL connection string.
-3. Run `npx prisma migrate dev --name init`.
-4. Implement a repository adapter using Prisma and authenticated recruiter API routes.
-
-Local storage is intentionally used for this challenge build so reviewers can run the complete flow without creating infrastructure accounts.
+The Prisma schema models `Candidate`, `Interview`, `Message`, and `Evaluation`. For local PostgreSQL setup, see `DATABASE_SETUP.md`. For Vercel, use a hosted PostgreSQL provider and set `DATABASE_URL` in the Vercel project settings—`localhost` and Docker addresses are not reachable from Vercel.
 
 ## Evaluation strategy
 
@@ -96,7 +91,7 @@ The MVP records communication, confidence, technical depth, problem solving and 
 - Next.js and React: application framework and UI
 - Web Speech API: browser STT and TTS
 - OpenAI Chat Completions API: optional dynamic follow-ups
-- Prisma schema syntax: production data-model blueprint
+- Prisma and PostgreSQL: optional durable interview persistence
 - Google Fonts: DM Sans and Manrope, with system fallback
 
 ## Deployment
@@ -108,7 +103,7 @@ The MVP records communication, confidence, technical depth, problem solving and 
 3. Add `OPENAI_API_KEY` and optionally `OPENAI_MODEL` under Environment Variables.
 4. Deploy.
 
-The local demo persistence is browser-specific. Connect the included Prisma schema for shared, multi-recruiter production data.
+Without `DATABASE_URL`, the demo persistence is browser-specific. Add a hosted PostgreSQL `DATABASE_URL` for shared, multi-recruiter data.
 
 ## Security and responsible AI
 

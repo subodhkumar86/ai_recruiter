@@ -7,7 +7,10 @@ export const saveInterview = (item: Interview) => {
   localStorage.setItem(KEY, JSON.stringify(items));
   void fetch("/api/interviews", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(item) }).catch(() => undefined);
 };
-export const deleteInterview = (id: string) => localStorage.setItem(KEY, JSON.stringify(loadInterviews().filter(x => x.id !== id)));
+export const deleteInterview = (id: string) => {
+  localStorage.setItem(KEY, JSON.stringify(loadInterviews().filter(x => x.id !== id)));
+  void fetch(`/api/interviews?id=${encodeURIComponent(id)}`, { method: "DELETE" }).catch(() => undefined);
+};
 export const exportInterviewsCsv = (items: Interview[]) => {
   const esc=(v:unknown)=>`"${String(v??"").replace(/"/g,'""')}"`;
   const rows=[["Candidate","Email","Mobile","Role","Score","Technical","Communication","Recommendation","Recruiter status","Completed"],...items.map(x=>[x.candidate.name,x.candidate.email,x.candidate.mobile,x.candidate.role||"",x.overall||"",x.scores?.technical||"",x.scores?.communication||"",x.recommendation||"",x.recruiterStatus||"new",x.completedAt||x.startedAt])];

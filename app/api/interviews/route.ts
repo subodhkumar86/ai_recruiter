@@ -66,3 +66,18 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unable to save the interview." }, { status: 500 });
   }
 }
+
+export async function DELETE(request: NextRequest) {
+  const id = new URL(request.url).searchParams.get("id")?.trim();
+  if (!id) return NextResponse.json({ error: "Interview id is required." }, { status: 400 });
+
+  try {
+    await prisma.interview.delete({ where: { id } });
+    return NextResponse.json({ deleted: true, id });
+  } catch (error) {
+    const code = typeof error === "object" && error && "code" in error ? (error as { code?: string }).code : undefined;
+    if (code === "P2025") return NextResponse.json({ deleted: true, id });
+    console.error("Unable to delete interview", error);
+    return NextResponse.json({ error: "Unable to delete the interview." }, { status: 500 });
+  }
+}

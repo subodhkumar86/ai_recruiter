@@ -1,0 +1,16 @@
+"use client";
+
+import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
+import Brand from "../../../components/Brand";
+
+type Feedback = { rating: number; note: string; createdAt: string };
+const key = "itseasynow-candidate-feedback";
+
+export default function FeedbackInsightsPage() {
+  const [items, setItems] = useState<Feedback[]>([]);
+  useEffect(() => { try { setItems(JSON.parse(localStorage.getItem(key) || "[]")); } catch { setItems([]); } }, []);
+  const average = useMemo(() => items.length ? items.reduce((sum, item) => sum + item.rating, 0) / items.length : 0, [items]);
+  const counts = [1, 2, 3, 4, 5].map(value => items.filter(item => item.rating === value).length);
+  return <main className="dashboard"><aside className="dashNav"><Brand /><nav><Link href="/recruiter">▦ <span>Overview</span></Link><Link href="/recruiter/analytics">⌁ <span>Analytics</span></Link><Link href="/recruiter/jobs">＋ <span>Job requisitions</span></Link><Link href="/recruiter/playbook">▤ <span>Interview playbook</span></Link><Link href="/recruiter/compare">⇄ <span>Compare candidates</span></Link><Link className="selected" href="/recruiter/feedback">♡ <span>Candidate feedback</span></Link></nav><div className="dashBottom"><Link href="/interview">＋ <span>New interview</span></Link><Link href="/">← <span>Candidate site</span></Link></div></aside><section className="dashMain feedbackInsights"><header><div><span className="eyebrow">Experience quality</span><h1>Candidate feedback</h1><p>Use feedback to make the first-round experience clearer and more respectful.</p></div><Link href="/interview/feedback" className="button secondary">Open feedback form</Link></header>{items.length ? <><section className="feedbackMetrics"><article><small>Average rating</small><b>{average.toFixed(1)}<em>/5</em></b><span>Across {items.length} response{items.length === 1 ? "" : "s"}</span></article><article><small>Positive experiences</small><b>{Math.round(items.filter(item => item.rating >= 4).length / items.length * 100)}%</b><span>Rated four stars or higher</span></article><article><small>Feedback coverage</small><b>{items.filter(item => item.note).length}</b><span>Written comments received</span></article></section><section className="feedbackInsightsGrid"><article className="ratingDistribution"><h2>Rating distribution</h2>{[5, 4, 3, 2, 1].map(value => <div key={value}><span>{value} ★</span><i><em style={{ width: `${items.length ? counts[value - 1] / items.length * 100 : 0}%` }} /></i><b>{counts[value - 1]}</b></div>)}</article><article className="feedbackComments"><h2>Recent comments</h2>{items.filter(item => item.note).slice(0, 5).map(item => <div key={item.createdAt}><span>{"★".repeat(item.rating)}</span><p>{item.note}</p><small>{new Date(item.createdAt).toLocaleDateString()}</small></div>)}{!items.some(item => item.note) && <p className="muted">No written feedback yet.</p>}</article></section></> : <section className="feedbackEmpty"><span>♡</span><h2>No feedback yet</h2><p>Share the feedback form after interviews to begin measuring candidate experience.</p><Link href="/interview/feedback" className="button primary">Open feedback form →</Link></section>}</section></main>;
+}
