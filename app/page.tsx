@@ -36,6 +36,15 @@ export default function Home() {
           <div className="floatCard insight"><span>✦</span><div><b>Insight ready</b><small>Strong technical depth</small></div></div>
         </div>
       </section>
+      <section className="productProof shell" aria-label="Product highlights">
+        <article><span>01</span><div><b>5 focused stages</b><small>From background to availability</small></div></article>
+        <article><span>↗</span><div><b>Adaptive questions</b><small>Follow-ups respond to evidence</small></div></article>
+        <article><span>✓</span><div><b>Human-led decision</b><small>AI supports, recruiters decide</small></div></article>
+      </section>
+      <section className="journey shell">
+        <div className="journeyIntro"><span className="eyebrow"><i /> A better first round</span><h2>Everything a recruiter needs, without making candidates feel screened by a form.</h2><p>Nova keeps the conversation structured in the background, then turns the response into clear, reviewable hiring evidence.</p><Link href="/how-it-works" className="journeyLink">Explore the interview flow →</Link></div>
+        <div className="journeySteps"><article><span>1</span><div><b>Candidate-ready</b><p>Consent, microphone checks and a typed-response fallback set clear expectations.</p></div></article><article><span>2</span><div><b>Conversational depth</b><p>Technical and project questions include contextual follow-ups when details matter.</p></div></article><article><span>3</span><div><b>Recruiter clarity</b><p>Transcript, evidence, scores and next-step recommendation arrive in one report.</p></div></article></div>
+      </section>
       <section className="benefits shell">
         {benefits.map(([title,text],i)=><article key={title}><span className="featureIcon">{["◌","⌁","✦"][i]}</span><div><h3>{title}</h3><p>{text}</p></div></article>)}
       </section>
